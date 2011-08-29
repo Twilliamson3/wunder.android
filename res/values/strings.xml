@@ -18,15 +18,19 @@
 	<string name="temperature">Temperature</string>
 	<string name="dewpoint">Dewpoint</string>
 	<string name="relative_humidity">Relative Humidity</string>
+	<string name="heat_index">Heat Index</string>
 	<string name="wind_direction">Wind Direction</string>
 	<string name="wind_speed">Wind Speed</string>
+	<string name="wndString">Winds</string>
+	<string name="wind_chill">Wind Chill</string>
 	<string name="barometric_pressure">Barometric Pressure</string>
 	<string name="solar_radiation">Solar Radiation</string>
 	<string name="uv_index">UV Index</string>
 	<string name="precipitation_1hr">Precipitation (hour)</string>
 	<string name="precipitation_today">Precipitation (today)</string>
 	<string name="message_data_not_available">Data not available...</string>
-	<string name="developed_by">Developed by Smerty Software</string>
+	<string name="developed_by">Smerty Software and Tripp Williamson</string>
 	<string name="use_metric">Use Metric</string>
 	<string name="pws_station_id">PWS Station ID</string>
 </resources>
+
