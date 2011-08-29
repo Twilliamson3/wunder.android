@@ -40,7 +40,7 @@ public class Wunder extends Activity {
 	static private final String TAG = Wunder.class.getSimpleName();
 
 	private static final String PREFS_NAME = "WunderPrefs";
-	private static final String DEF_STATION_ID = "KCALIVER14";
+	private static final String DEF_STATION_ID = "KSCLEESV2";
 	private LocationHelper locationHelper;
 	transient private String selectedID = "";
 
@@ -192,7 +192,6 @@ public class Wunder extends Activity {
 				row.addView(text);
 				tableLayout.addView(row);
 			}
-
 			if (conds.dewpoint != null && conds.dewpoint.length() > 0) {
 				row = new TableRow(that);
 				text = new TextView(that);
@@ -212,6 +211,70 @@ public class Wunder extends Activity {
 				row.addView(text);
 				tableLayout.addView(row);
 			}
+// my mod - Add Heat index if over 90 Degrees
+// T Williamson 8/4/11
+			
+			double Temp = Double.parseDouble(conds.temperature);		
+			if (usemetric) {
+				//Do Nothing 
+				} else {
+			if (conds.temperature != null && Temp >= 90) {
+				double Humi = Double.parseDouble(conds.humidity);
+// Calculate Heat Index
+				double t2=Math.pow(Temp, 2);
+				double rh2=Math.pow(Humi, 2);
+				double heatind=-42.379 + 2.04901523*Temp + 10.14333127*Humi - 0.22475541*Temp*Humi - 6.83783e-03*t2 - 5.481717e-02*rh2 + 1.22874e-03*t2*Humi + 8.5282e-04*Temp*rh2 - 1.99e-06*t2*rh2;
+//Round
+				int heatindex = (int)heatind;
+				row = new TableRow(that);
+				text = new TextView(that);
+				text.setText(that.getResources().getText(
+						R.string.heat_index)
+						+ ": \t\t\t\t\t\t" + heatindex + "F");
+				text.setTextSize(18);
+				text.setTextColor(Color.RED);
+				row.setPadding(3, 3, 3, 3);
+				row.setBackgroundColor(Color.argb(200, 51, 51, 51));
+				row.addView(text);
+				tableLayout.addView(row);
+				
+			}
+				}
+			// Add Wind Chill If under 50F
+			// T Williamson 8/29/11
+					if (usemetric) {
+					//Do Nothing 
+					} else {
+					double wind = Double.parseDouble(conds.windspeed);
+					if (Temp <= 50 && wind >= 3) {
+			// Calculate Wind Chill
+					double windchil = 35.74+(0.6215*Temp)-(35.75*Math.pow(wind, 0.16))+(0.4275*Temp*Math.pow(wind, 0.16));
+			//Round
+					int Windchill = (int)windchil;
+					row = new TableRow(that);
+					text = new TextView(that);
+					text.setText(that.getResources().getText(
+								R.string.wind_chill)
+								+ ": \t\t\t\t\t\t" + Windchill + "F");
+							text.setTextSize(18);
+							row.setPadding(3, 3, 3, 3);
+							row.setBackgroundColor(Color.argb(200, 51, 51, 51));
+							row.addView(text);
+							tableLayout.addView(row);	
+							}
+								}
+				if (conds.humidity != null && conds.humidity.length() > 0) {
+					row = new TableRow(that);
+					text = new TextView(that);
+					text.setText(that.getResources().getText(
+							R.string.relative_humidity)
+							+ ": \t\t\t" + conds.humidity + "%");
+					text.setTextSize(18);
+					row.setPadding(3, 3, 3, 3);
+					row.setBackgroundColor(Color.argb(200, 51, 51, 51));
+					row.addView(text);
+					tableLayout.addView(row);
+				}
 
 			if (conds.humidity != null && conds.humidity.length() > 0) {
 				row = new TableRow(that);
@@ -225,7 +288,7 @@ public class Wunder extends Activity {
 				row.addView(text);
 				tableLayout.addView(row);
 			}
-
+			if (usemetric) {
 			if (conds.winddirection != null && conds.winddirection.length() > 0
 					&& conds.windspeed != null && conds.windspeed.length() > 0
 					&& Double.valueOf(conds.windspeed) > 0) {
@@ -263,7 +326,30 @@ public class Wunder extends Activity {
 				row.addView(text);
 				tableLayout.addView(row);
 			}
-
+			} else {
+// add wind string
+			if (conds.wndString != null && conds.wndString.length() > 0) {
+				row = new TableRow(that);
+				text = new TextView(that);
+				text.setText(that.getResources().getText(
+						R.string.wndString) 
+						+":" );
+				text.setTextSize(18);
+				row.setPadding(3, 3, 3, 0);
+				row.setBackgroundColor(Color.argb(200, 51, 51, 51));
+				row.addView(text);
+				tableLayout.addView(row);
+				
+				row = new TableRow(that);
+				text = new TextView(that);
+				text.setText(conds.wndString);
+				text.setTextSize(14);
+				row.setPadding(3, 3, 0, 3);
+				row.setBackgroundColor(Color.argb(200, 51, 51, 51));
+				row.addView(text);
+				tableLayout.addView(row);
+			}
+			}
 			if (conds.pressure != null && conds.pressure.length() > 0) {
 				row = new TableRow(that);
 				text = new TextView(that);
@@ -610,6 +696,8 @@ public class Wunder extends Activity {
 				retval.dewpoint = doc.getElementsByTagName("dewpoint_f")
 						.item(0).getChildNodes().item(0).getNodeValue();
 				retval.pressure = doc.getElementsByTagName("pressure_in").item(
+						0).getChildNodes().item(0).getNodeValue();
+				retval.wndString = doc.getElementsByTagName("wind_string").item(
 						0).getChildNodes().item(0).getNodeValue();
 			} catch (Exception e) {
 				Log.d(TAG, e.getMessage(), e);
